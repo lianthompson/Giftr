@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch, Redirect, Route, Router, Link } from 'react-router-dom';
+import { Switch, Redirect, Route, Router } from 'react-router-dom';
 import Main from './Main';
 import Profile from './components/Profile/Profile';
 import Callback from './Callback/Callback';

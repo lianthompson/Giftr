@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const request = require('request');
-const port = process.env.PORT || 8000;
+const port = 8000;
 const bodyParser = require('body-parser');
 const expressValidator = require('express-validator');
 const router = express.Router();
@@ -14,7 +14,6 @@ const API_KEY = process.env.REACT_APP_ETSY_API_KEY;
 
 const API_URL = process.env.API_URL;
 
-const PRODUCT_TITLES_QUERY = 'SELECT TITLE FROM Products';
 
 // Create mySql connection
 const connection = mysql.createConnection({
@@ -38,7 +37,6 @@ app.use(bodyParser.json());
 app.use(expressValidator());
 app.use(logger("dev")); 
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static("client/build"));
 
 
 
@@ -72,6 +70,7 @@ app.post('/added', (req, res) => {
     const productInfo = { 
         listing_id: req.body.listing_id, 
         title: req.body.title, 
+        user_email: req.body.user_email
     };
     console.log("hello lian", productInfo);
 
@@ -82,9 +81,12 @@ app.post('/added', (req, res) => {
     })
 })
 
-app.get('/products', function (req, res) {
+app.get('/products/:email', function (req, res) {
+    const email = req.params.email;
+    const PRODUCT_TITLES_QUERY = 'SELECT TITLE FROM Products WHERE user_email = ? ORDER BY id DESC';
+
     console.log("hello from server")
-    connection.query(PRODUCT_TITLES_QUERY, (err, results) => {
+    connection.query(PRODUCT_TITLES_QUERY, email, (err, results) => {
         if (err) {
             console.log(err);
             return res.send(err)
@@ -125,12 +127,6 @@ app.use(function (err, req, res, next) {
     res.render('error');
 });
 
-// app.listen(process.env.PORT || 5000, function () {
-//     console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
-// });
-//app.listen(process.env.PORT || 8000);
-//app.listen(process.env.PORT, '0.0.0.0')
-
-app.listen(port, () => console.log(`Listening on port ${port}` || 8000));
+app.listen(port, () => console.log(`Listening on port ${port}`));
 
 module.exports = app;

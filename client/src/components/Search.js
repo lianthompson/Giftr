@@ -1,5 +1,8 @@
 import React from 'react';
+import Auth from '../Auth/Auth';
 import './search.css';
+
+const auth = new Auth();
 
 class Search extends React.Component {
   state = {
@@ -39,24 +42,57 @@ checkItem(product, e) {
 
   onClick = (e) => {
     e.preventDefault();
+    const { isAuthenticated, userProfile, getProfile } = auth;
+
+    if(!isAuthenticated()) {
+        alert("Oops! You'll need to log in to save that!")
+    }
+
+    if (isAuthenticated()) {
+        if (!userProfile) {
+            getProfile((err, profile) => {
+                for (var index in this.state.itemsChecked) {
+                    console.log("hello here is key in for loop");
+                    let item = this.state.itemsChecked[index]
+                    fetch('/added', {
+                        method: "POST",
+                        body: JSON.stringify({
+                            listing_id: item.listing_id,
+                            title: item.title,
+                            user_email: profile.email
+                        }),
+                        headers: {
+                            "content-type": "application/json"
+                        },
+                    }).then(res => res.json())
+                        .then(res => console.log(res))
+                }
+            })
+        }
+        else {
+            for (var index in this.state.itemsChecked) {
+                console.log("hello here is key in for loop");
+                let item = this.state.itemsChecked[index]
+                fetch('/added', {
+                    method: "POST",
+                    body: JSON.stringify({
+                        listing_id: item.listing_id,
+                        title: item.title,
+                        user_email: userProfile.email
+                    }),
+                    headers: {
+                        "content-type": "application/json"
+                    },
+                }).then(res => res.json())
+                    .then(res => console.log(res))
+            }
+
+        }
     alert("Saved!")
     // let itemChecked = this.state.itemChecked;
-    for (var index in this.state.itemsChecked) {
-        console.log("hello here is key in for loop");
-        let item = this.state.itemsChecked[index]
-        fetch('/added', {
-          method: "POST",
-          body: JSON.stringify({
-        listing_id: item.listing_id,
-        title: item.title,
-          }),
-          headers: {
-            "content-type": "application/json"
-          },
-        }).then(res => res.json())
-          .then(res => console.log(res))
-    }
   }
+   
+} 
   
 
   render() {

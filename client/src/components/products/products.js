@@ -1,22 +1,40 @@
 import React, { Component } from 'react';
 import Signup from '../Signup';
+import Auth from '../../Auth/Auth';
 import './products.css';
+
+const auth = new Auth();
 
 
 class Products extends Component {
+    
     state = {
         products: []
     };
 
     // displays mysql data 
     componentDidMount() {
-        this.getProducts();
+        const { isAuthenticated, userProfile, getProfile } = auth;
+        if (!isAuthenticated()) {
+            alert("Oops! You'll need to log in to see your products!")
+        }
+
+        if (isAuthenticated()) {
+            if (!userProfile) {
+                getProfile((err, profile) => {
+                    this.getProducts(profile.email)
+                });
+            } else {
+                this.getProducts(userProfile.email);
+
+            }
+        } 
     }
 
-    getProducts = () => {
+    getProducts = (email) => {
         console.log("getting products");
         // looks for /products in server.js
-        fetch('/products')
+        fetch(`/products/${email}`)
             .then((res) => {
                 return res.json();
             })

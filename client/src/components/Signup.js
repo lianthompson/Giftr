@@ -24,7 +24,7 @@ class Signup extends Component {
                     <Navbar.Header>
                         <Navbar.Brand>
                             <a href="/" className='btn-margin'>
-                                <Glyphicon glyph="gift" font-size="50px" onClick={this.goTo.bind(this)} />
+                                <Glyphicon glyph="gift" fontSize="50px" onClick={this.goTo.bind(this)} />
                             </a>
                         </Navbar.Brand>
                         <Navbar.Toggle />
