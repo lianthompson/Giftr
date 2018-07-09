@@ -14,7 +14,6 @@ const API_KEY = process.env.REACT_APP_ETSY_API_KEY;
 
 const API_URL = process.env.API_URL;
 
-const PRODUCT_TITLES_QUERY = 'SELECT TITLE FROM Products';
 
 // Create mySql connection
 const connection = mysql.createConnection({
@@ -71,6 +70,7 @@ app.post('/added', (req, res) => {
     const productInfo = { 
         listing_id: req.body.listing_id, 
         title: req.body.title, 
+        user_email: req.body.user_email
     };
     console.log("hello lian", productInfo);
 
@@ -81,9 +81,12 @@ app.post('/added', (req, res) => {
     })
 })
 
-app.get('/products', function (req, res) {
+app.get('/products/:email', function (req, res) {
+    const email = req.params.email;
+    const PRODUCT_TITLES_QUERY = 'SELECT TITLE FROM Products WHERE user_email = ? ORDER BY id DESC';
+
     console.log("hello from server")
-    connection.query(PRODUCT_TITLES_QUERY, (err, results) => {
+    connection.query(PRODUCT_TITLES_QUERY, email, (err, results) => {
         if (err) {
             console.log(err);
             return res.send(err)
